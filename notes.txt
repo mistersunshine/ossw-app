@@ -10,11 +10,11 @@ del
 
 need android sdk location specified in local.properties
 
-sdk.dir=C:\\Users\\harry\\AppData\\Local\\Android\\Sdk
+| sdk.dir=C:\\Users\\user_name\\AppData\\Local\\Android\\Sdk
 
 ===
 
-Android Bundled 641ms C:\Users\harry\Desktop\dev\expo\OsswAppExpoBt\node_modules\expo\AppEntry.js (599 modules)
- LOG  [BleError: Service 19b10000-e8f2-537e-4f6c-d104768a1214 for device ? not found]
- LOG  [BleError: Service 19b10000-e8f2-537e-4f6c-d104768a1214 for device ? not found]
+Android Bundled 641ms C:\Users\user_name\Desktop\dev\expo\expo_name\node_modules\expo\AppEntry.js (599 modules)
+| LOG  [BleError: Service 19b10000-e8f2-537e-4f6c-d104768a1214 for device ? not found]
+| LOG  [BleError: Service 19b10000-e8f2-537e-4f6c-d104768a1214 for device ? not found]
 
