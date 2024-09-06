@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import DeviceModal from "./DeviceConnectionModal";
 import useBLE from "./useble";
+import ConnectedView from "./ConnectedView";
 
 const App = () => {
   const {
@@ -16,14 +17,13 @@ const App = () => {
     connectToDevice,
     color,
     requestPermissions,
-    scanForPeripherals,
   } = useBLE();
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const scanForDevices = async () => {
     const isPermissionsEnabled = await requestPermissions();
     if (isPermissionsEnabled) {
-      scanForPeripherals();
+      //scanForPeripherals();
     }
   };
 
@@ -40,9 +40,7 @@ const App = () => {
     <SafeAreaView style={[styles.container, { backgroundColor: color }]}>
       <View style={styles.heartRateTitleWrapper}>
         {connectedDevice ? (
-          <>
-            <Text style={styles.heartRateTitleText}>Connected</Text>
-          </>
+          <ConnectedView />
         ) : (
           <Text style={styles.heartRateTitleText}>
             Please connect the Arduino

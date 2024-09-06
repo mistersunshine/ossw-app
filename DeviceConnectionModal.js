@@ -1,14 +1,12 @@
-import React, { FC, useCallback } from "react";
+import React, { useCallback } from "react";
 import {
   FlatList,
-  ListRenderItemInfo,
   Modal,
   SafeAreaView,
   Text,
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { Device } from "react-native-ble-plx";
 
 const DeviceModalListItem = (props) => {
   const { item, connectToPeripheral, closeModal } = props;
@@ -43,7 +41,7 @@ const DeviceModal = (props) => {
         />
       );
     },
-    [closeModal, connectToPeripheral]
+    [closeModal, connectToPeripheral],
   );
 
   return (

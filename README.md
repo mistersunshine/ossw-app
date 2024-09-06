@@ -12,3 +12,6 @@ The ultimate objective is to have this app send the following information to the
 - The current time
 - A message to display on the watch
 
+## Sources
+
+- BLE / Expo code that I started with: https://github.com/friyiajr/BLEExpoBlog

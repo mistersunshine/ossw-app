@@ -1,18 +1,11 @@
+/* eslint-disable no-bitwise */
 import { useMemo, useState } from "react";
 import { PermissionsAndroid, Platform } from "react-native";
 
 import * as ExpoDevice from "expo-device";
 
 import base64 from "react-native-base64";
-import {
-  BleError,
-  BleManager,
-  Characteristic,
-  Device,
-} from "react-native-ble-plx";
-
-const DATA_SERVICE_UUID = "19b10000-e8f2-537e-4f6c-d104768a1214";
-const COLOR_CHARACTERISTIC_UUID = "19b10001-e8f2-537e-4f6c-d104768a1217";
+import { BleManager } from "react-native-ble-plx";
 
 const bleManager = new BleManager();
 
@@ -28,7 +21,7 @@ function useBLE() {
         title: "Location Permission",
         message: "Bluetooth Low Energy requires Location",
         buttonPositive: "OK",
-      }
+      },
     );
     const bluetoothConnectPermission = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
@@ -36,7 +29,7 @@ function useBLE() {
         title: "Location Permission",
         message: "Bluetooth Low Energy requires Location",
         buttonPositive: "OK",
-      }
+      },
     );
     const fineLocationPermission = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
@@ -44,7 +37,7 @@ function useBLE() {
         title: "Location Permission",
         message: "Bluetooth Low Energy requires Location",
         buttonPositive: "OK",
-      }
+      },
     );
 
     return (
@@ -63,7 +56,7 @@ function useBLE() {
             title: "Location Permission",
             message: "Bluetooth Low Energy requires Location",
             buttonPositive: "OK",
-          }
+          },
         );
         return granted === PermissionsAndroid.RESULTS.GRANTED;
       } else {
@@ -77,78 +70,7 @@ function useBLE() {
     }
   };
 
-  const connectToDevice = async (device) => {
-    try {
-      const deviceConnection = await bleManager.connectToDevice(device.id);
-      setConnectedDevice(deviceConnection);
-      await deviceConnection.discoverAllServicesAndCharacteristics();
-      bleManager.stopDeviceScan();
-
-      startStreamingData(deviceConnection);
-    } catch (e) {
-      console.log("FAILED TO CONNECT", e);
-    }
-  };
-
-  const isDuplicteDevice = (devices, nextDevice) =>
-    devices.findIndex((device) => nextDevice.id === device.id) > -1;
-
-  const scanForPeripherals = () =>
-    bleManager.startDeviceScan(null, null, (error, device) => {
-      if (error) {
-        console.log(error);
-      }
-
-      if (
-        device &&
-        (device.localName === "Arduino" || device.name === "Arduino" || (device.localName && device.localName.indexOf("Feather") >= 0) || (device.name && device.name.indexOf("Feather") >= 0))
-      ) {
-        setAllDevices((prevState) => {
-          if (!isDuplicteDevice(prevState, device)) {
-            return [...prevState, device];
-          }
-          return prevState;
-        });
-      }
-    });
-
-  const onDataUpdate = (
-    error,
-    characteristic
-  ) => {
-    if (error) {
-      console.log(error);
-      return;
-    } else if (!characteristic?.value) {
-      console.log("No Data was received");
-      return;
-    }
-
-    const colorCode = base64.decode(characteristic.value);
-
-    let color = "white";
-    if (colorCode === "B") {
-      color = "blue";
-    } else if (colorCode === "R") {
-      color = "red";
-    } else if (colorCode === "G") {
-      color = "green";
-    }
-
-    setColor(color);
-  };
-
-  const startStreamingData = async (device) => {
-    if (device) {
-      device.monitorCharacteristicForService(
-        DATA_SERVICE_UUID,
-        COLOR_CHARACTERISTIC_UUID,
-        onDataUpdate
-      );
-    } else {
-      console.log("No Device Connected");
-    }
-  };
+  const connectToDevice = () => {};
 
   return {
     connectToDevice,
@@ -156,8 +78,6 @@ function useBLE() {
     connectedDevice,
     color,
     requestPermissions,
-    scanForPeripherals,
-    startStreamingData,
   };
 }
 

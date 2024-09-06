@@ -18,3 +18,4 @@ Android Bundled 641ms C:\Users\user_name\Desktop\dev\expo\expo_name\node_modules
 | LOG  [BleError: Service 19b10000-e8f2-537e-4f6c-d104768a1214 for device ? not found]
 | LOG  [BleError: Service 19b10000-e8f2-537e-4f6c-d104768a1214 for device ? not found]
 
+the above log is because the app is looking for the uuid from the device, which i dont have
