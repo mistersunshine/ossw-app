@@ -9,10 +9,24 @@ import { BleManager } from "react-native-ble-plx";
 
 const bleManager = new BleManager();
 
+const deviceIsAllowed = (device) => {
+  const DEVICE_NAME_WHITELIST = ["Arduino", "Feather"];
+  let matchFound = false;
+  let index = 0;
+  do {
+    matchFound =
+      (device.localName &&
+        device.localName.indexOf(DEVICE_NAME_WHITELIST[index]) > -1) ||
+      (device.name && device.name.indexOf(DEVICE_NAME_WHITELIST[index]) > -1);
+    index++;
+  } while (!matchFound && index < DEVICE_NAME_WHITELIST.length);
+
+  return matchFound;
+};
+
 function useBLE() {
   const [allDevices, setAllDevices] = useState([]);
   const [connectedDevice, setConnectedDevice] = useState(null);
-  const [color, setColor] = useState("white");
 
   const requestAndroid31Permissions = async () => {
     const bluetoothScanPermission = await PermissionsAndroid.request(
@@ -70,14 +84,60 @@ function useBLE() {
     }
   };
 
-  const connectToDevice = () => {};
+  const isDuplicateDevice = (devices, nextDevice) =>
+    devices.findIndex((device) => nextDevice.id === device.id) > -1;
+
+  const populateDevices = () =>
+    bleManager.startDeviceScan(null, null, (error, device) => {
+      if (error) {
+        console.log(error);
+      }
+
+      if (
+        device &&
+        (device.localName || device.name) &&
+        deviceIsAllowed(device)
+      ) {
+        setAllDevices((prevState) => {
+          if (!isDuplicateDevice(prevState, device)) {
+            return [...prevState, device];
+          }
+          return prevState;
+        });
+      }
+    });
+
+  const connectToDevice = async (device) => {
+    try {
+      const deviceConnection = await bleManager.connectToDevice(device.id);
+      setConnectedDevice(deviceConnection);
+      await deviceConnection.discoverAllServicesAndCharacteristics();
+      bleManager.stopDeviceScan();
+      // startStreamingData(deviceConnection);
+    } catch (e) {
+      console.log("FAILED TO CONNECT", e);
+    }
+  };
+
+  const disconnectCurrentDevice = async () => {
+    if (connectedDevice) {
+      try {
+        // stopStreamingData(connectedDevice);
+        await connectedDevice.cancelConnection();
+        setConnectedDevice(null);
+      } catch (e) {
+        console.log("FAILED TO DISCONNECT", e);
+      }
+    }
+  };
 
   return {
     connectToDevice,
     allDevices,
     connectedDevice,
-    color,
     requestPermissions,
+    populateDevices,
+    disconnectCurrentDevice,
   };
 }
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, StyleSheet } from "react-native";
+import { Text, StyleSheet, Pressable } from "react-native";
 
 const ConnectedView = (props) => {
   //  const { devices, visible, connectToPeripheral, closeModal } = props;
@@ -33,7 +33,10 @@ const ConnectedView = (props) => {
       <Pressable
         onPressIn={() => onPressButton(1, true)}
         onPressOut={() => onPressButton(1, false)}
-        style={styles.ctaButton}
+        style={({ pressed }) => [
+          { backgroundColor: pressed ? "red" : "pink" },
+          styles.ctaButton,
+        ]}
       >
         <Text>Button 1</Text>
       </Pressable>
@@ -63,11 +66,11 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   ctaButton: {
-    backgroundColor: "#FF6060",
     justifyContent: "center",
     alignItems: "center",
     height: 50,
     marginHorizontal: 20,
+    paddingHorizontal: 20,
     marginBottom: 5,
     borderRadius: 8,
   },

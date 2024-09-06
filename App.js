@@ -15,15 +15,16 @@ const App = () => {
     allDevices,
     connectedDevice,
     connectToDevice,
-    color,
     requestPermissions,
+    populateDevices,
+    disconnectCurrentDevice,
   } = useBLE();
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const scanForDevices = async () => {
     const isPermissionsEnabled = await requestPermissions();
     if (isPermissionsEnabled) {
-      //scanForPeripherals();
+      populateDevices();
     }
   };
 
@@ -32,12 +33,13 @@ const App = () => {
   };
 
   const openModal = async () => {
+    disconnectCurrentDevice();
     scanForDevices();
     setIsModalVisible(true);
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: color }]}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.heartRateTitleWrapper}>
         {connectedDevice ? (
           <ConnectedView />
