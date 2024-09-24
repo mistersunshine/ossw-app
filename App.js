@@ -18,6 +18,7 @@ const App = () => {
     requestPermissions,
     populateDevices,
     disconnectCurrentDevice,
+    sendData,
   } = useBLE();
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -42,7 +43,7 @@ const App = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.heartRateTitleWrapper}>
         {connectedDevice ? (
-          <ConnectedView />
+          <ConnectedView sendData={sendData} />
         ) : (
           <Text style={styles.heartRateTitleText}>
             Please connect the Arduino

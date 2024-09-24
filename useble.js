@@ -6,11 +6,15 @@ import * as ExpoDevice from "expo-device";
 
 import base64 from "react-native-base64";
 import { BleManager } from "react-native-ble-plx";
+import { Buffer } from "buffer";
 
 const bleManager = new BleManager();
 
+const SERVICE_UUID = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
+const CHARACTERISTIC_UUID = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
+
 const deviceIsAllowed = (device) => {
-  const DEVICE_NAME_WHITELIST = ["Arduino", "Feather"];
+  const DEVICE_NAME_WHITELIST = ["Arduino", "Feather", "ESP32"];
   let matchFound = false;
   let index = 0;
   do {
@@ -115,7 +119,7 @@ function useBLE() {
       bleManager.stopDeviceScan();
       // startStreamingData(deviceConnection);
     } catch (e) {
-      console.log("FAILED TO CONNECT", e);
+      console.log("Failed to connectToDevice", e);
     }
   };
 
@@ -126,9 +130,24 @@ function useBLE() {
         await connectedDevice.cancelConnection();
         setConnectedDevice(null);
       } catch (e) {
-        console.log("FAILED TO DISCONNECT", e);
+        console.log("Failed to disconnectCurrentDevice", e);
       }
     }
+  };
+
+  const sendData = (str) => {
+    // THIS IS THE MAGIC SAUCE THAT ENABLES A STRING TO BE SENT TO ARDUINO ESP32 WITH BLE USING BLEDEVICE LIBRARY
+    const myBuffer = Buffer.from(str).toString("base64");
+
+    connectedDevice
+      .writeCharacteristicWithResponseForService(
+        SERVICE_UUID,
+        CHARACTERISTIC_UUID,
+        myBuffer,
+      )
+      .catch((e) => {
+        console.log("Failed to sendData", JSON.stringify(e));
+      });
   };
 
   return {
@@ -138,6 +157,7 @@ function useBLE() {
     requestPermissions,
     populateDevices,
     disconnectCurrentDevice,
+    sendData,
   };
 }
 

@@ -2,17 +2,11 @@ import React from "react";
 import { Text, StyleSheet, Pressable } from "react-native";
 
 const ConnectedView = (props) => {
-  //  const { devices, visible, connectToPeripheral, closeModal } = props;
+  const { sendData } = props;
 
   const onPressButton = async (buttonNumber, isOn) => {
-    const isOnPacket = !!isOn ? "49" : "48";
-    const packet = "B" + (48 + buttonNumber) + isOnPacket;
-    console.log("onPressButton packet " + packet);
-
-    // B4949 - 1 on | B4948 - 1 off
-    // B5049 - 2 on
-    // B5149 - 3 on
-    // B5249 - 4 on
+    // B011 - button 1 on | B010 - button 1 off
+    sendData("B01" + (isOn ? "1" : "0"));
   };
 
   /*
