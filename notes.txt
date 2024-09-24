@@ -19,3 +19,55 @@ Android Bundled 641ms C:\Users\user_name\Desktop\dev\expo\expo_name\node_modules
 | LOG  [BleError: Service 19b10000-e8f2-537e-4f6c-d104768a1214 for device ? not found]
 
 the above log is because the app is looking for the uuid from the device, which i dont have
+
+===
+
+finally got to the heart of the issue of sending data to the device. 
+
+heres the react native side
+
+  const sendData = (str) => {
+    // THIS IS THE MAGIC SAUCE THAT ENABLES A STRING TO BE SENT TO ARDUINO ESP32 WITH BLE USING BLEDEVICE LIBRARY
+    const myBuffer = Buffer.from(str).toString("base64");
+
+    connectedDevice
+      .writeCharacteristicWithResponseForService(
+        SERVICE_UUID,
+        CHARACTERISTIC_UUID,
+        myBuffer,
+      )
+      .catch((e) => {
+        console.log("Failed to sendData", JSON.stringify(e));
+      });
+  };
+
+heres the arduino side
+
+#include <BLEDevice.h>
+#include <BLEUtils.h>
+#include <BLEServer.h>
+
+// these uuids are from the arduino ble write example, will use different ones later
+#define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
+#define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
+
+class MyCallbacks : public BLECharacteristicCallbacks {
+  void onWrite(BLECharacteristic *pCharacteristic) {
+    String value = pCharacteristic->getValue();
+
+    if (value.length() > 0) {
+      Serial.println("*********");
+      Serial.print("New value: ");
+      for (int i = 0; i < value.length(); i++) {
+        Serial.print(value[i]);
+      }
+
+      Serial.println();
+      Serial.println("*********");
+    }
+  }
+};
+
+// ... later...
+
+pCharacteristic->setCallbacks(new MyCallbacks());
